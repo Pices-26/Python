@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
+# In[1]:
 
 
 import matplotlib.pyplot as plt
@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 plt.plot([5,2,1],[7,5,3])
 
 
-# In[8]:
+# In[2]:
 
 
 #PLOTTING LINES
@@ -32,7 +32,7 @@ plt.legend()
 plt.show()
 
 
-# In[14]:
+# In[3]:
 
 
 #BAR CHART
@@ -54,7 +54,7 @@ plt.legend()
 plt.show()
 
 
-# In[18]:
+# In[4]:
 
 
 #HISTOGRAM
@@ -71,7 +71,7 @@ plt.ylabel('y')
 plt.show()
 
 
-# In[26]:
+# In[5]:
 
 
 #SCATTER GRAPHS
@@ -88,7 +88,7 @@ plt.legend()
 plt.show()
 
 
-# In[32]:
+# In[6]:
 
 
 #STACK PLOTS - one section with many sections inside representing things
@@ -116,7 +116,7 @@ plt.legend()
 plt.show()
 
 
-# In[41]:
+# In[7]:
 
 
 #PIE CHART
@@ -140,7 +140,7 @@ plt.pie(slices,
         autopct='%1.1f%%') # adds percentages
 
 
-# In[48]:
+# In[8]:
 
 
 #loading data from files
@@ -174,7 +174,7 @@ plt.ylabel('y')
 plt.show()
 
 
-# In[62]:
+# In[9]:
 
 
 #Getting data from the internet 
@@ -195,7 +195,7 @@ def graph_data(stock):
 graph_data('TSLA')
 
 
-# In[83]:
+# In[10]:
 
 
 #BASIC CUSTOMIZATION
@@ -222,7 +222,7 @@ def graph_data(stock):
 graph_data('TSLA')
 
 
-# In[84]:
+# In[11]:
 
 
 #handling unix time
@@ -231,7 +231,7 @@ dateconv = np.vectorize(dt.datetime.fromtimestamp)
 date = dateconv(date)
 
 
-# In[128]:
+# In[12]:
 
 
 #more customization - color and fills
@@ -270,8 +270,342 @@ def graph_data(stock):
 graph_data('EBAY')
 
 
+# In[13]:
+
+
+#SPINES AND HORIZONTAL LINES
+import pandas_datareader as data
+
+def graph_data(stock):
+    
+    fig = plt.figure()
+    ax1 = plt.subplot2grid((1,1), (0,0))
+    
+    df = data.DataReader(stock,'yahoo')
+    ax1.plot_date(df.index, df.Close, '-')
+    
+    ax1.axhline(df.Close[0], color='k', linewidth=2)#draws a horizontal line
+    
+    plt.plot([],[], linewidth=5, label='loss', color='r',alpha=0.5)
+    plt.plot([],[], linewidth=5, label='gain', color='g',alpha=0.5)
+    
+    plt.fill_between(df.index, df.Close, df.Close[0],where=(df.Close > df.Close[0]), facecolor='g', alpha=0.5)
+    plt.fill_between(df.index, df.Close, df.Close[0],where=(df.Close < df.Close[0]), facecolor='r', alpha=0.5)
+    #plt.fill_between(df.index, df.Close, 36, facecolor='m', alpha=0.5)
+    
+    plt.xticks(rotation=45) # rotating date labels
+    plt.xticks(color='r') 
+    
+    plt.yticks([0,10,20,30,40,50,60])
+    plt.yticks(color='m')
+    
+    plt.grid(True, color='g', linewidth=1) # adds grid
+    
+    #spines - outlines of the graph
+    ax1.spines['left'].set_color('c')
+    ax1.spines['right'].set_visible(False)
+    ax1.spines['top'].set_visible(False)
+    ax1.spines['bottom'].set_color('r')
+    
+    ax1.spines['left'].set_linewidth(5)
+    
+    ax1.tick_params(axis='x',colors='#f06215') #bottom labels become orange
+    
+    plt.xlabel('Date', color='b')
+    plt.ylabel('Price', color='r')
+    plt.title(stock)
+    plt.legend()
+    plt.show()
+
+graph_data('EBAY')
+
+
+# In[14]:
+
+
+#STYLES
+import matplotlib.dates as mdates
+import matplotlib.ticker as mticker
+import pandas as pd
+from mpl_finance import candlestick_ohlc
+from matplotlib import style
+
+style.use('dark_background')
+#style.use('fivethirtyeight')
+print(plt.style.available) # prints all possible styles
+
+print(plt.__file__) # prints file location
+
+def graph_data(stock):
+    
+    fig = plt.figure()
+    ax1 = plt.subplot2grid((1,1), (0,0))
+    
+    df = data.DataReader(stock,'yahoo')
+    ax1.plot_date(df.index, df.Close, '-')
+    
+    
+    
+    plt.xlabel('Date')
+    plt.ylabel('Price', color='r')
+    plt.title(stock)
+    plt.legend()
+    plt.show()
+
+graph_data('EBAY')
+
+
+# In[15]:
+
+
+#LIVE GRAPHS
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+from matplotlib import style
+
+style.use('fivethirtyeight')
+
+fig = plt.figure()
+ax1 = fig.add_subplot(1,1,1)
+
+def animate(i):
+    graph_data = open('example.txt', 'r').read()
+    lines = graph_data.split('\n')
+    xs = []
+    ys = []
+    for line in lines:
+        if len(line) > 1:
+            x, y = line.split(',')
+            xs.append(x)
+            ys.append(y)
+    ax1.clear()        
+    ax1.plot(xs,ys)
+    
+ani = animation.FuncAnimation(fig, animate, interval = 1000)
+
+
+# In[16]:
+
+
+#ANNOTATION AND PLACING TEXT
+import matplotlib.dates as mdates
+import matplotlib.ticker as mticker
+import pandas as pd
+from mpl_finance import candlestick_ohlc
+from matplotlib import style
+
+style.use('dark_background')
+
+def graph_data(stock):
+    
+    fig = plt.figure()
+    ax1 = plt.subplot2grid((1,1), (0,0))
+    
+    df = data.DataReader(stock,'yahoo')
+    ax1.plot_date(df.index, df.Close, '-')
+    
+    ax1.grid(True)
+    
+    font_dict = {'family' : 'serif', 'color': 'pink', 'size':15}
+    ax1.text(df.index[1000], df.Close[2000], 'Text Example', fontdict = font_dict)
+    
+    ax1.annotate('Big news!', (df.index[1000], df.Close[1000]), 
+                 xytext=(0.8,0.9), textcoords='axes fraction',
+                arrowprops = dict(facecolor = 'grey', color='grey'))
+    
+    plt.xlabel('Date')
+    plt.ylabel('Price', color='r')
+    plt.title(stock)
+    plt.legend()
+    plt.show()
+
+graph_data('EBAY')
+
+
+# In[17]:
+
+
+#ANNOTATING LAST PRICE TO EDGE
+import matplotlib.dates as mdates
+import matplotlib.ticker as mticker
+import pandas as pd
+from mpl_finance import candlestick_ohlc
+from matplotlib import style
+
+style.use('dark_background')
+
+def graph_data(stock):
+    
+    fig = plt.figure()
+    ax1 = plt.subplot2grid((1,1), (0,0))
+    
+    df = data.DataReader(stock,'yahoo')
+    ax1.plot_date(df.index, df.Close, '-')
+    
+    ax1.grid(True)
+    
+    
+    ax1.annotate('Big news!', (df.index[1000], df.Close[1000]), 
+                 xytext=(0.8,0.9), textcoords='axes fraction',
+                arrowprops = dict(facecolor = 'grey', color='grey'))
+    
+    #properties of the box
+    bbox_props = dict(boxstyle='round', fc='k',ec='w', lw=1)
+    
+    #LAST PRICE ANNOTATION
+    ax1.annotate(str(df.Close[-1]), (df.index[-1], df.Close[-1]),
+                 xytext = (df.index[-1] , df.Close[-1]), 
+                 bbox = bbox_props)
+    
+    
+    
+    plt.xlabel('Date')
+    plt.ylabel('Price', color='r')
+    plt.title(stock)
+    plt.legend()
+    plt.show()
+
+graph_data('EBAY')
+
+
+# In[18]:
+
+
+#SUBPLOTS
+import random
+
+style.use('fivethirtyeight')
+
+fig = plt.figure()
+
+def create_plots():
+    xs = []
+    ys = []
+    
+    for i in range(10):
+        x = i
+        y = random.randrange(10)
+        
+        xs.append(x)
+        ys.append(y)
+    return xs, ys
+
+
+#add subplot syntax
+#ax1 = fig.add_subplot(2,1,1) # height, width, plot
+#ax2 = fig.add_subplot(2,2,2)
+#ax3 = fig.add_subplot(2,1,2)
+
+#x , y = create_plots()
+#ax1.plot(x,y)
+
+#x , y = create_plots()
+#ax2.plot(x,y)
+
+#x , y = create_plots()
+#ax3.plot(x,y)
+
+#subplot to grid
+x , y = create_plots()
+ax1 = plt.subplot2grid((6,1), (0,0), rowspan=1, colspan=1)
+x , y = create_plots()
+ax2 = plt.subplot2grid((6,1), (1,0), rowspan=1, colspan=1)
+x , y = create_plots()
+ax3 = plt.subplot2grid((6,1), (5,0), rowspan=1, colspan=1)
+
+
+
+plt.show()
+
+
+# In[10]:
+
+
+#3D
+get_ipython().run_line_magic('matplotlib', 'widget')
+get_ipython().run_line_magic('matplotlib', 'ipympl')
+from mpl_toolkits.mplot3d import axes3d
+import matplotlib.pyplot as plt
+import numpy as np
+
+fig = plt.figure()
+ax1 = fig.add_subplot(111, projection='3d')
+
+x = [1,2,3,4,5,6,7,8,9,10]
+y = [5,7,2,8,2,6,3,7,4,8]
+z = [1,5,3,2,7,3,1,10,3,5]
+
+ax1.plot(x,y,z)
+
+ax1.set_xlabel('X')
+ax1.set_ylabel('Y')
+ax1.set_zlabel('Z')
+
+plt.show()
+
+
+# In[12]:
+
+
+#3D SCATTER PLOT
+get_ipython().run_line_magic('matplotlib', 'widget')
+get_ipython().run_line_magic('matplotlib', 'ipympl')
+from mpl_toolkits.mplot3d import axes3d
+import matplotlib.pyplot as plt
+from matplotlib import style
+
+style.use('ggplot')
+
+fig = plt.figure()
+ax1 = fig.add_subplot(111, projection='3d')
+
+x = [1,2,3,4,5,6,7,8,9,10]
+y = [5,6,7,8,2,5,6,3,7,2]
+z = [1,2,6,3,2,7,3,3,7,2]
+
+x2 = [-1,-2,-3,-4,-5,-6,-7,-8,-9,-10]
+y2 = [-5,-6,-7,-8,-2,-5,-6,-3,-7,-2]
+z2 = [1,2,6,3,2,7,3,3,7,2]
+
+ax1.scatter(x, y, z, c='g', marker='o')
+ax1.scatter(x2, y2, z2, c ='r', marker='o')
+
+ax1.set_xlabel('x axis')
+ax1.set_ylabel('y axis')
+ax1.set_zlabel('z axis')
+
+plt.show()
+
+
 # In[ ]:
 
 
+#3D BAR CHART
+get_ipython().run_line_magic('matplotlib', 'widget')
+get_ipython().run_line_magic('matplotlib', 'ipympl')
+from mpl_toolkits.mplot3d import axes3d
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib import style
+style.use('ggplot')
 
+fig = plt.figure()
+ax1 = fig.add_subplot(111, projection='3d')
+
+x3 = [1,2,3,4,5,6,7,8,9,10]
+y3 = [5,6,7,8,2,5,6,3,7,2]
+z3 = np.zeros(10)
+
+dx = np.ones(10)
+dy = np.ones(10)
+dz = [1,2,3,4,5,6,7,8,9,10]
+
+ax1.bar3d(x3, y3, z3, dx, dy, dz)
+
+
+ax1.set_xlabel('x axis')
+ax1.set_ylabel('y axis')
+ax1.set_zlabel('z axis')
+
+plt.show()
 
